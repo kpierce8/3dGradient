@@ -49,6 +49,30 @@ colr=1
 for(i in 1:length(myModels)){
 try( lines(test$upmeasure[myModels[[i]]$mstart:myModels[[i]]$mend],myModels[[i]]$fitted.values, col=i, lwd=2))
 }
+
+for(i in 1:length(myModels)){
+paste("model ", i, " is ",myModels[[i]]$mstart)
+}
+
+
+temp <- c(1,1,1)
+for(i in 1:length(myModels)){
+temp <- rbind(temp,c( i, myModels[[i]]$mstart, myModels[[i]]$mstart-i))
+}
+temp
+
+temp2 <- cbind(temp[,1],temp[,2]-temp[,1])
+temp2
+
+test3 <- temp2[temp2[,2] > 0,]
+test3
+
+# code to get start, stop measures and start stop elevationlength(reaches)
+myModels[[284]]$mstart
+myModels[[284]]$mend
+myModels[[284]]$model[[1]][1]
+myModels[[284]]$model[[1]][length(myModels[[284]]$model[[1]])]
+
 #length(myModels)
 #getSlot(myModels, "mstart")
 #getSlot(myModels, "mend")

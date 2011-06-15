@@ -6,7 +6,7 @@ plot(reaches[[rnum]]$measure, reaches[[rnum]]$raster)
 
 
 
-write.csv(test[-dim(test)[1],], "C:\\data\\ProjectsLocal\\Segments\\WRIA18Gradient\\test2.csv",   row.names=FALSE)
+write.csv(test[-dim(test)[1],], "D:\\work\\streamAnalysis\\test2.csv",   row.names=FALSE)
 
 num_Reach <- length(reaches)
 
@@ -28,9 +28,9 @@ reach_stats[i,3] <- bob2$r.squared
 reach_stats[i,2] <- max(abs(testLM$residuals))
 reach_stats[i,5] <- bobsq$r.squared
 }
+reach_stats
 
-
-write.csv(reach_stats, "C:\\data\\ProjectsLocal\\Segments\\WRIA18Gradient\\stats2.csv",   row.names=FALSE)
+write.csv(reach_stats, "d:\\work\\streamanalysis\\stats2.csv",   row.names=FALSE)
 
 
 hist(reach_stats[,3],breaks=c(0,.75,.9,.98,.99,.995, 1), plot=F)

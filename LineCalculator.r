@@ -1,4 +1,4 @@
-bob <- read.csv("C:\\data\\ProjectsLocal\\Segments\\wria25test\\output.txt",header=F)
+bob <- read.csv("C:\\data\\ProjectsLocal\\Segments\\Hood_Canal_Gradient\\output.txt",header=F)
 
 names(bob) <- c("LineID","Index","xcoor","ycoor","raster")
 
@@ -28,4 +28,4 @@ plot(reaches[[10]]$xcoor[1:1000],reaches[[10]]$ycoor[1:1000])
 
 #write.csv(cbind(reaches[[10]]$xcoor[1:1000],reaches[[10]]$ycoor[1:1000]),"C:\\data\\ProjectsLocal\\Segments\\Hood_Canal_Gradient\\linetest.csv")      
 #write.csv(reaches[[1]],"C:\\data\\ProjectsLocal\\Segments\\Hood_Canal_Gradient\\reaches1.csv")
-#write.csv(reaches[[2]],"C:\\data\\ProjectsLocal\\Segments\\Hood_Canal_Gradient\\reaches2.csv")
+#write.csv(reaches[[2]],"C:\\data\\ProjectsLocal\\Segments\\Hood_Canal_Gradient\\reaches2.csv") n

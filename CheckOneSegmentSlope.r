@@ -1,3 +1,5 @@
+#RUN AFTER LineCalculator.r
+
 library(SiZer)
 par(mfrow=c(2,1))
 ##FUNCTIONS
@@ -32,14 +34,16 @@ inflections[numPoints] <- ((y[numPoints]-y[numPoints-1])/(x[numPoints]-x[numPoin
 
 #######################################
 
-rnum <- sample(seq(1:8000),1)  +1
-rnum<- 7379
+# rnum <- sample(seq(1:length(reaches)),1)  +1
+# rnum<- 9001
+#rnum <- 4679 #single model
 #rnum <- rnum2 +1
 #reaches[[rnum]]
 
 
 test <- na.omit(reaches[[rnum]])
-test <- data.frame(test,elev = test$raster, upmeasure = max(test$measure)-test$measure)/3.28
+
+test <- data.frame(test,elev = test$raster, upmeasure = (max(test$measure)-test$measure)/3.28)
 plot(test$upmeasure, test$elev,xlab= "stream meters",ylab = "elevation (m)")
 testLM <- lm(test$elev ~ test$upmeasure)
 testLMsq <- lm(test$elev ~ test$upmeasure + I(test$upmeasure^2))
@@ -69,7 +73,7 @@ max(abs(testLMsq$residuals))/mean(abs(testLMsq$residuals))
 max(abs(testLM$residuals))
 max(abs(testLMsq$residuals))
 max(abs(testLMsq$residuals))/max(abs(testLM$residuals))
-rnum2
+rnum
 pl<-piecewise.linear(test$upmeasure, test$elev, middle = 1)
 #abline(v=pl$change.point)
 lines(test$upmeasure,testLMsq$fitted.values, col=3, lty=2, lwd=2)
@@ -80,17 +84,18 @@ plot(test$upmeasure,gradients,xlab= "stream meters")
 
 
 
-#inflections <- findInflection(test$upmeasure,test$elev)
-#plot(test$upmeasure,inflections)
-#abline(h=0)
-#abline(h=  sd(inflections),lty=2)
-#abline(h=-sd(inflections),lty=2)
-#
-#infl2<-findInflection(test$upmeasure,inflections)
-#
-#plot(test$upmeasure,infl2)
-#abline(h=0)
-#abline(h=  sd(infl2),lty=2)
-#abline(h=-sd(infl2),lty=2)
-#
-savePlot(paste(pldir,"\\CheckOneSegmentSlope\\stream", rnum, ".pdf",sep=""),type="pdf")
+
+# inflections <- findInflection(test$upmeasure,test$elev)
+# plot(test$upmeasure,inflections)
+# abline(h=0)
+# abline(h=  sd(inflections),lty=2)
+# abline(h=-sd(inflections),lty=2)
+
+# infl2<-findInflection(test$upmeasure,inflections)
+
+# plot(test$upmeasure,infl2)
+# abline(h=0)
+# abline(h=  sd(infl2),lty=2)
+# abline(h=-sd(infl2),lty=2)
+
+savePlot(paste("D:\\work\\streamAnalysis\\CheckOneSegmentSlope\\stream", rnum, ".pdf",sep=""),type="pdf")
