@@ -1,0 +1,16 @@
+
+
+
+# startMeasure, endMeasure, rSq segLength
+
+
+for(noMod in 1:dim(SegmentSummaries)[1]) {
+}
+
+noMod <- 1
+
+currNoMod <- test[test$measure >= SegmentSummaries[noMod, "startMeasure"] & test$measure <= SegmentSummaries[noMod, "endMeasure"],]
+dim(currNoMod)
+currNoMod
+
+plot(currNoMod$measure, currNoMod$elev)

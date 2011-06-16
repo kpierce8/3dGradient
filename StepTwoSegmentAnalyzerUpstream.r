@@ -8,46 +8,54 @@ bobsq <- summary(testLMsq)
 abline(testLM)
 
 maxMeasure <- max(test$measure)
-maxElevation <- max(test$elevation)
+maxElevation <- max(test$elev)
 
 numPoints <- length(test$elev)
 myModels <- list()
 j <- 1
-myThreshhold <- .995
+myThreshhold <- .90
 minGrain <- 4
 mstart <- 1
 mend <- mstart-1 + minGrain
-for(i in 1:(numPoints-minGrain)){ 
+curModel <- 1 #initiates model state to numeric, acts as a flag for unassigned model
+for(i in 1:(numPoints-minGrain))
+	{ 
         testLMsub  <- lm(test$elev[mstart:mend] ~ test$measure[mstart:mend])
         subSummary <- summary(testLMsub)
         rStat <- subSummary$r.squared            
-        if(rStat > myThreshhold)  {
-          curModel <- testLMsub
-          rSQ<- rStat
-          myModels[[j]] <- c(curModel, mstart=mstart, mend=mend, rsquare= rSQ)
-          mend <- min(mend + 1, numPoints)
-          }  else{
-                  testLMsqsub <- lm(test$elev[mstart:mend] ~ test$measure[mstart:mend] + I(test$measure[mstart:mend]^2))
-                  subSummarysq <- summary(testLMsqsub)
-                  rStatsq <- subSummarysq$r.squared
-                  if( rStatsq > myThreshhold)  {
-                      curModel <- testLMsqsub
-                      rSQ<- rStatsq
-                      myModels[[j]] <- c(curModel, mstart=mstart, mend=mend, rsquare= rSQ)
-                      mend <- min(mend + 1, numPoints)
-                      
-                      } else{      
-                        mstart <- mend -1
-                        mend <- min(mstart + minGrain, numPoints)
-                        j <- j +1 }
-                
-        }
-            
-       
-}
+        if(rStat > myThreshhold)  
+		{
+		  curModel <- testLMsub
+		  rSQ<- rStat
+		  myModels[[j]] <- c(curModel, mstart=mstart, mend=mend, rsquare= rSQ)
+		  mend <- min(mend + 1, numPoints)
+		}  else{
+			  testLMsqsub <- lm(test$elev[mstart:mend] ~ test$measure[mstart:mend] + I(test$measure[mstart:mend]^2))
+			  subSummarysq <- summary(testLMsqsub)
+			  rStatsq <- subSummarysq$r.squared
+			  if( rStatsq > myThreshhold)  
+				{
+				  curModel <- testLMsqsub
+				  rSQ<- rStatsq
+				  myModels[[j]] <- c(curModel, mstart=mstart, mend=mend, rsquare= rSQ)
+				  mend <- min(mend + 1, numPoints)                     
+				} else{ 
+					if (is.numeric(curModel)) 
+						{
+						  mstart <- mstart + 1
+						  mend <- mend +1
+						}	else{      
+								curModel <- 1 #initiates model state to numeric, acts as a flag for unassigned model
+								mstart <- mend -1
+								mend <- min(mstart + minGrain, numPoints)
+								j <- j +1 
+								}
+						}
+				}		
+	}
 
 
-plot(test$measure, test$elev,xlab= "stream meters",ylab = "elevation (m)")
+plot(test$measure, test$elev,xlab= "stream meters",ylab = "elevation (m)", cex=0.5)
 colr=1
 for(i in 1:length(myModels)){
 try( lines(test$measure[myModels[[i]]$mstart:myModels[[i]]$mend],myModels[[i]]$fitted.values, col=i, lwd=2))
@@ -115,72 +123,4 @@ eventIndex = eventIndex + 1
 }
 
 sum(modelSummaries[,"segLength"])
-modelSummaries
 
-starts <- c(modelSummaries$startMeasure, modelSummaries$endMeasure)
-startsU <- unique(starts)
-
-
-if(min(modelSummaries$startMeasure) > 0) {
-modeledSegmentsStarts <- c(0, sort(startsU))
-addedZero <- 1
-} else{
-addedZero <- 0
-}
-
-if(max(modelSummaries$endMeasure) < maxMeasure) {
-maxIncluded <- 0
-} else{
-maxIncluded <- 1
-modeledSegmentsStarts <- modeledSegmentsStarts[modeledSegmentsStarts < max(modeledSegmentsStarts)]
-}
-
-
-
-
-SegmentSummaries <-data.frame(matrix(0, length(modeledSegmentsStarts),10))
-
-names(SegmentSummaries) <- eventTable
-
-gModels <- match(modelSummaries$startMeasure,modeledSegmentsStarts)
-gModele <- match(modelSummaries$endMeasure, modeledSegmentsStarts)
-gModele
-gModels
-#Need to check to see if last segment includes end of route
-
-
-
-SegmentSummaries[gModels,] <- modelSummaries
-SegmentSummaries[gModele,"startMeasure"] <- modelSummaries$endMeasure
-SegmentSummaries[gModele,"startElevation"] <- modelSummaries$endElevation
-SegmentSummaries
-
-
-if(SegmentSummaries[1, "endMeasure"] < 1) {
-	SegmentSummaries[1, "endMeasure"] <- SegmentSummaries[2, "startMeasure"]
-	SegmentSummaries[1, "endElevation"] <- SegmentSummaries[2, "startElevation"]
-	
-	}
-
-
-
-for (endCheck in gModele) {
-if(SegmentSummaries[endCheck, "endMeasure"] < 1) {
-	SegmentSummaries[endCheck, "endMeasure"] <- SegmentSummaries[endCheck + 1, "startMeasure"]
-	SegmentSummaries[endCheck, "endElevation"] <- SegmentSummaries[endCheck + 1, "startElevation"]
-	
-	}
-}
-
-#Add maxes to last line if final model did not include it
-if(SegmentSummaries[dim(SegmentSummaries)[1], "endMeasure"] < 1 | is.na(SegmentSummaries[dim(SegmentSummaries)[1], "endMeasure"])) {
-	SegmentSummaries[dim(SegmentSummaries)[1], "endMeasure"] <- maxMeasure
-	SegmentSummaries[dim(SegmentSummaries)[1], "endElevation"] <- maxElevation
-	
-	}
-
-
-SegmentSummaries
-#length(myModels)
-#getSlot(myModels, "mstart")
-#getSlot(myModels, "mend")
